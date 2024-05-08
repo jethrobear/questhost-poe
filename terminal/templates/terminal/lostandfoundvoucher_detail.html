@@ -1,0 +1,45 @@
+{%extends 'terminal/base.html'%}
+{%load static%}
+
+{%block content%}
+<a href="{%url 'terminal_index'%}">Return to home</a>
+<div id="reader"></div>
+
+<form method="post" class="ui form" autocomplete="off">
+    {%csrf_token%}
+    {{barcode_form}}
+    <button type="submit">Search</button>
+</form>
+
+<h2>Lost and Found Detail</h2>
+{%if object%}
+<table>
+    <tbody>
+        <tr>
+            <th>Lost and Found ID</th>
+            <td>{{object.slug}}</td>
+        </tr>
+        <tr>
+            <th>Tag created date</th>
+            <td>{{object.date}}</td>
+        </tr>
+        <tr>
+            <th>Found owner</th>
+            <td>{{object.found_owner}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="ui buttons">
+    <a class="ui button" href="{%url 'lostandfound_update_owner' slug=object.slug%}">Claim Item</a>
+</div>
+{%endif%}
+
+<a href="{%url 'lostandfound_create'%}" class="ui button">Create Lost and Found tag</a>
+
+{%endblock%}
+
+{%block script%}
+<script src="{% static 'html5-qrcode.min.js'%}"></script>
+<script src="{% static 'htmlqr_init.js'%}"></script>
+{%endblock%}

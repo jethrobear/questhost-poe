@@ -1,0 +1,11 @@
+{%extends 'terminal/base.html'%}
+{%load static%}
+
+{%block content%}
+<h2>Update POI Status for ticket {{object}}</h2>
+<form method="post" class="ui form">
+    {%csrf_token%}
+    {{form}}
+    <button type="submit">Submit</button>
+</form>
+{%endblock%}
