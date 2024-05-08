@@ -1,0 +1,9 @@
+<table>
+    {%for inventory in inventory_list%}
+    <tr>
+        <th>{{inventory.inventory_id}}</th>
+        <td>{%if inventory.claimed_date%}Claimed {{inventory.claimed_date}}{%else%}Not claimed{%endif%}</td>
+    </tr>
+    {%endfor%}
+</table>
+<a href="{%url 'ticketinventory_update_claimed' pk=object.id%}" class="btn btn-default">Redeem Inventory</a>

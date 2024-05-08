@@ -1,0 +1,18 @@
+html {
+    font-family: sans-serif;
+}
+
+a, button{
+ border: 0;
+ height: 0.3in;
+ line-height: 0.3in;
+ display: inline-block;
+ background: moccasin;
+ box-shadow: none;
+ border-radius: 0px;
+ border: solid 1px;
+}
+
+input{
+    height: 0.3in;
+}

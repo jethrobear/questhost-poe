@@ -12,12 +12,40 @@ class Ticket(models.Model):
     poi_name = models.CharField(max_length=64, null=True, blank=True)
     poi_address = models.CharField(max_length=64, null=True, blank=True)
     poi_contact = models.CharField(max_length=64, null=True, blank=True)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
 
     def save(self, *args, **kwargs):
         self.is_poi = False
         if self.poi_name or self.poi_address or self.poi_contact:
             self.is_poi = True
         return super().save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return self.id
+
+
+class Claimable(models.Model):
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    claimed_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+
+class Abandonable(models.Model):
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    abandoned_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+
+class TicketInventory(Claimable):
+    inventory_id = models.CharField(max_length=32)
+
+    def __str__(self) -> str:
+        return f"{self.inventory_id}, offered to {self.ticket}"
 
 
 class CheckIn(models.Model):
@@ -33,6 +61,8 @@ class CheckIn(models.Model):
 class LostAndFoundVoucher(models.Model):
     slug = models.SlugField(null=True, blank=True)
     date = models.DateTimeField(auto_now=True)
+    had_uploaded = models.BooleanField(default=False)
+
     found = models.BooleanField(default=False)
     found_owner = models.ForeignKey(
         Ticket,
@@ -61,6 +91,34 @@ class LostAndFoundVoucher(models.Model):
         super().save(*args, **kwargs)
 
 
-class LockerVoucher(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+class LockerVoucher(Claimable, Abandonable):
+    slug = models.SlugField(null=True, blank=True)
+    date = models.DateTimeField(auto_now=True)
     had_uploaded = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        # TODO: Add event in the future
+
+        if not self.slug:
+            while True:
+                slug = f"0LOC-PF24-"
+                for _ in range(5):
+                    slug += chr(randrange(ord("A"), ord("Z") + 1))
+                # TODO: Have a way to get the rands faster
+                try:
+                    LockerVoucher.objects.get(slug=slug)
+                except:
+                    self.slug = slug
+                    break
+        super().save(*args, **kwargs)
+
+
+class PrintJob(models.Model):
+    redirect_blob = models.BinaryField()
+    redirect_id = models.CharField(max_length=64)
+    print_blob = models.BinaryField()
+    print_id = models.CharField(max_length=64)
+    is_printed = models.BooleanField(default=False)
+    redirect_view = models.CharField(max_length=64)
+    date = models.DateTimeField(auto_now=True)
+    image_path = models.CharField(max_length=255, null=True, blank=True)

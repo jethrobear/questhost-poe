@@ -1,0 +1,14 @@
+[Unit]
+Description=QuestHost start local server
+After=network.target
+Wants=network-online.target
+
+[Service]
+Restart=always
+Type=simple
+ExecStart=/bin/python3 manage.py runserver
+WorkingDirectory=/home/questhost/workspace/questhost-poe
+Environment=
+
+[Install]
+WantedBy=multi-user.target 

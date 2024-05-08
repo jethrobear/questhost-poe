@@ -3,66 +3,22 @@
 
 {%block content%}
 <a href="{%url 'terminal_index'%}">Return to home</a>
-<div id="reader"></div>
 
-<form method="post" class="ui form" autocomplete="off">
-    {%csrf_token%}
-    {{barcode_form}}
-    <button type="submit">Search</button>
-</form>
+{%include 'terminal/component/barcodeform.html'%}
 
 <h2>Ticket Detail</h2>
 {%if object%}
-<table>
-    <tbody>
-        <tr>
-            <th>Ticket ID</th>
-            <td>{{object.id}}</td>
-        </tr>
-        <tr>
-            <th>Status</th>
-            <td>{{object.status}}</td>
-        </tr>
-        <tr>
-            <th>Ticket Type</th>
-            <td>{{object.ticket_type}}</td>
-        </tr>
-    </tbody>
-</table>
+{%include 'terminal/component/ticket_detail.html'%}
 
-{%if object.is_poi%}
+<h2>Ticket Inventory</h2>
+{%include 'terminal/component/ticket_inventory.html'%}
+
+<h2>Locker Vouchers</h2>
+{%include 'terminal/component/ticket_locker.html'%}
+
 <h2>Person of Interest Status</h2>
-<table>
-    <tbody>
-        <tr>
-            <th>Contact Person</th>
-            <td>{{object.poi_name}}</td>
-        </tr>
-        <tr>
-            <th>Address</th>
-            <td>{{object.poi_address}}</td>
-        </tr>
-        <tr>
-            <th>Contact Number</th>
-            <td>{{object.poi_contact}}</td>
-        </tr>
-    </tbody>
-</table>
-{%endif%}
-
-<div class="ui buttons">
-    <a class="ui button" href="#">Check-in and print</a>
-    <a class="ui button" href="#">Check-in and print (POI)</a>
-    <a class="ui button" href="#">Scan Inventory</a>
-    <a class="ui button" href="{%url 'ticket_update_poi' pk=object.id%}">Manage POI status</a>
-    <a class="ui button" href="#">Assign Locker</a>
-</div>
+{%include 'terminal/component/ticket_poi.html'%}
 {%else%}
 <p>Scan Ticket</p>
 {%endif%}
-{%endblock%}
-
-{%block script%}
-<script src="{% static 'html5-qrcode.min.js'%}"></script>
-<script src="{% static 'htmlqr_init.js'%}"></script>
 {%endblock%}

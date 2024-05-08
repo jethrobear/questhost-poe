@@ -1,0 +1,17 @@
+<table>
+    <tbody>
+        <tr>
+            <th>Lost and Found ID</th>
+            <td>{{object.slug}}</td>
+        </tr>
+        <tr>
+            <th>Tag created date</th>
+            <td>{{object.date}}</td>
+        </tr>
+        <tr>
+            <th>Found owner</th>
+            <td>{{object.found_owner}}</td>
+        </tr>
+    </tbody>
+</table>
+<a href="{%url 'lostandfound_update_owner' slug=object.slug%}" class="btn btn-default">Claim Item</a>

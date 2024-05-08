@@ -1,12 +1,13 @@
 import re
 from django import forms
+from .widgets import HTML5QRTextInput
 
 TICKET_REGEX = r"(?P<TID>[A-Za-z0-9]{3,4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{5})"
 
 
 class BarcodeSearchForm(forms.Form):
     barcode = forms.CharField(
-        widget=forms.TextInput(
+        widget=HTML5QRTextInput(
             attrs={"autofocus": True},
         )
     )

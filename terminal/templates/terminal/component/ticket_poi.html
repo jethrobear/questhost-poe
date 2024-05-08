@@ -1,0 +1,21 @@
+{%if object.is_poi%}
+<table>
+    <tbody>
+        <tr>
+            <th>Contact Person</th>
+            <td>{{object.poi_name}}</td>
+        </tr>
+        <tr>
+            <th>Address</th>
+            <td>{{object.poi_address}}</td>
+        </tr>
+        <tr>
+            <th>Contact Number</th>
+            <td>{{object.poi_contact}}</td>
+        </tr>
+    </tbody>
+</table>
+{%else%}
+<p>Not tagged</p>
+{%endif%}
+<a href="{%url 'ticket_update_poi' pk=object.id%}" class="btn btn-default">Manage POI status</a>

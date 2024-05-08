@@ -1,0 +1,30 @@
+<table>
+    <tbody>
+        <tr>
+            <th>Ticket ID</th>
+            <td>{{object.id}}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>{{object.status}}</td>
+        </tr>
+        <tr>
+            <th>Ticket Type</th>
+            <td>{{object.ticket_type}}</td>
+        </tr>
+        <tr>
+            <th>Valid from</th>
+            <td>{{object.start_date}}</td>
+        </tr>
+        <tr>
+            <th>Valid to</th>
+            <td>{{object.end_date}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<form action="{%url 'checkin_create' pk=object.id%}" method="post">
+    {%csrf_token%}
+    <button type="submit" class="btn btn-default">Check-in and print</button>
+</form>
+<a href="{%url 'ticket_update_status' pk=object.id%}" class="btn btn-default">Update Ticket</a>
