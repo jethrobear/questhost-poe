@@ -237,9 +237,9 @@ class PrintDocumentView(generic.DetailView):
 
             # TODO: Delete Checkin or LostAndFoundVoucher if print was unsuccessful
         except PTouchNotFoundError:
-            return HttpResponse("PTOUCH PRINTER NOT FOUND")
+            return HttpResponse("PTOUCH PRINTER NOT FOUND", status_code=500)
         except PTouchAccessError:
-            return HttpResponse("PTOUCH UDEV NOT INSTALLED")
+            return HttpResponse("PTOUCH UDEV NOT INSTALLED", status_code=500)
 
 
 # For TUI

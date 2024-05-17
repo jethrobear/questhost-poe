@@ -1,6 +1,18 @@
 import configparser
 import re
-from tkinter import BOTH, END, Entry, Frame, Label, LabelFrame, LEFT, Tk, TOP
+from tkinter import (
+    BOTH,
+    Button,
+    END,
+    Entry,
+    Frame,
+    Label,
+    LabelFrame,
+    LEFT,
+    Tk,
+    TOP,
+    Toplevel,
+)
 import requests
 
 config = configparser.ConfigParser()
@@ -8,6 +20,7 @@ config.read_file(open("tui.ini", "r"))
 HOST = config.get("SERVER", "HOST")
 API = config.get("SERVER", "API")
 config.set("SERVER", "TICKET_URL", f"{HOST}{API}ticket/")
+session = requests.Session()
 
 
 class BarcodeEntry(Entry):
@@ -46,6 +59,14 @@ class TicketInformationLabelFrame(LabelFrame):
         self.lblTicketType.pack(side=LEFT)
         self.txtTicketType = Label(self.ticketType, borderwidth=1, relief="sunken")
         self.txtTicketType.pack(side=LEFT, expand=True, fill=BOTH)
+        self.buttonGroup = Frame(self)
+        self.buttonGroup.pack(fill=BOTH)
+        self.buttonCheckIn = Button(
+            self.buttonGroup,
+            text="Check-in",
+            command=lambda: self.event_generate("<<CheckIn>>"),
+        )
+        self.buttonCheckIn.pack()
 
     def clear(self):
         self.txtID.configure(text="")
@@ -57,6 +78,9 @@ class TicketInformationLabelFrame(LabelFrame):
         self.txtStatus.configure(text=status)
         self.txtTicketType.configure(text=ticketType)
 
+    def get_tid(self):
+        return self.txtID.cget("text")
+
 
 class Root(Tk):
     def __init__(self, *args, **kwargs):
@@ -66,6 +90,7 @@ class Root(Tk):
         self.txtBarcode.bind("<<Finish>>", self.on_finish)
         self.ticketDetail = TicketInformationLabelFrame(self, text="Ticket Detail")
         self.ticketDetail.pack(fill="both")
+        self.ticketDetail.bind("<<CheckIn>>", self.on_checkin)
         self.txtBarcode.focus_set()
 
     def on_finish(self, event):
@@ -73,12 +98,29 @@ class Root(Tk):
         tid = str(event.widget.get_tid() or "")
         if tid:
             try:
-                result = requests.get(f"{HOST}{API}ticket/{tid}")
+                result = session.get(f"{HOST}{API}ticket/{tid}/")
                 result.raise_for_status()
                 data = result.json()
                 self.ticketDetail.set(data["id"], data["status"], data["ticket_type"])
             except requests.exceptions.HTTPError:
                 pass
+
+    def on_checkin(self, event):
+        tid = self.ticketDetail.get_tid()
+        if tid:
+            try:
+                session.get(f"{HOST}/ticket/{tid}/")
+                checkin_result = session.post(
+                    f"{HOST}/checkin/{tid}/",
+                    headers={
+                        "X-CSRFToken": session.cookies["csrftoken"],
+                    },
+                )
+                checkin_result.raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                top = Toplevel(self)
+                lblError = Label(top, text=str(e))
+                lblError.pack()
 
 
 if __name__ == "__main__":
